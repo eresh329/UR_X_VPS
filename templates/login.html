@@ -1,0 +1,22 @@
+{% extends "base_pub.html" %}
+{% block title %}Sign in · {{ site_name }}{% endblock %}
+{% block pnav %}<a class="lnk" href="/">{{ ic('home', 16) }} Home</a>{% endblock %}
+{% block content %}
+<div class="lgn"><div class="lcard rv">
+  <div class="lg">
+    <div class="ring"><svg viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="34" stroke="#62dfff" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="6 7"/></svg><img src="{{ url_for('static', filename='urxvps-logo.jpg') }}" alt=""></div>
+    <h1>Sign in to panel</h1><p>Choose a username and enter the access password.</p>
+  </div>
+  {% if error %}<div class="flash bad" style="margin-bottom:16px">{{ ic('alert', 18) }}<span>{{ error }}</span></div>{% endif %}
+  <form method="POST" autocomplete="on">
+    <div class="field"><label for="username">Username</label>
+      <div class="inp">{{ ic('user', 18) }}<input id="username" name="username" value="{{ username or '' }}" placeholder="your-name" required autofocus maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false"></div></div>
+    <div class="field"><label for="password">Access password</label>
+      <div class="inp">{{ ic('lock', 18) }}<input id="password" type="password" name="password" placeholder="••••••••" required autocomplete="current-password"></div></div>
+    <button class="btn pri lg block" type="submit">Unlock panel {{ ic('next', 18) }}</button>
+  </form>
+  <div class="hint" style="text-align:center;margin-top:16px">New usernames are created automatically.</div>
+  <div class="sysline"><i></i>ENCRYPTED SESSION</div>
+</div></div>
+{% endblock %}
+{% block foot %}AUTHORIZED USERS ONLY{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base_pub.html" %}
+{% block title %}Maintenance · {{ site_name }}{% endblock %}
+{% block pnav %}{% endblock %}
+{% block content %}
+<div class="solo"><div>
+  <svg class="big" viewBox="0 0 150 150" fill="none" stroke="#62dfff" stroke-width="2" stroke-linecap="round">
+    <g class="spin" style="animation-duration:14s"><circle cx="75" cy="75" r="26"/><circle cx="75" cy="75" r="10" stroke="#7af0c8"/>
+      <path d="M75 28v14M75 108v14M28 75h14M108 75h14M42 42l10 10M98 98l10 10M42 108l10-10M98 52l10-10"/></g>
+    <circle class="spin r" cx="75" cy="75" r="62" stroke-opacity=".3" stroke-dasharray="4 10"/>
+  </svg>
+  <span class="livepill"><i></i>OFFLINE FOR NOW</span>
+  <h1 style="font-size:32px;margin-top:16px">Under maintenance</h1>
+  <p>{{ message }}</p>
+  <a class="btn" href="">{{ ic('restart', 16) }}Check again</a>
+</div></div>
+{% endblock %}
+{% block foot %}{{ site_name }} · BACK SOON{% endblock %}

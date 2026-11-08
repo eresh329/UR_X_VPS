@@ -1,0 +1,53 @@
+{% from "_icons.html" import ic with context %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% include "_head.html" %}
+<title>{% block title %}{{ site_name }}{% endblock %}</title>
+</head>
+<body>
+{% include "_boot.html" %}
+<div class="shell">
+  <aside class="side" aria-label="Main menu">
+    <a class="brand" href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='urxvps-logo.jpg') }}" alt=""><span>{{ site_name }}</span></a>
+    <div class="nsec">Workspace</div>
+    <a class="nl {{ 'on' if nav == 'home' }}" href="{{ url_for('dashboard') }}">{{ ic('grid', 18) }}Projects</a>
+    <a class="nl {{ 'on' if nav == 'new' }}" href="{{ url_for('project_new') }}">{{ ic('plus', 18) }}New project</a>
+    {% if server_name is defined %}
+    <div class="nsec">{{ server_name }}</div>
+    <a class="nl {{ 'on' if active == 'overview' }}" href="{{ url_for('project_overview', name=server_name) }}">{{ ic('server', 18) }}Overview</a>
+    <a class="nl {{ 'on' if active == 'console' }}" href="{{ url_for('project_console', name=server_name) }}">{{ ic('terminal', 18) }}Console</a>
+    <a class="nl {{ 'on' if active == 'files' }}" href="{{ url_for('project_files', name=server_name) }}">{{ ic('folder', 18) }}Files</a>
+    <a class="nl {{ 'on' if active == 'packages' }}" href="{{ url_for('project_packages', name=server_name) }}">{{ ic('package', 18) }}Packages</a>
+    <a class="nl {{ 'on' if active == 'settings' }}" href="{{ url_for('project_settings', name=server_name) }}">{{ ic('sliders', 18) }}Settings</a>
+    {% endif %}
+    <div class="grow"></div>
+    <div class="ubox"><span class="av">{{ (username or '?')[:1] }}</span><span class="un">{{ username }}<small>Signed in</small></span><a href="{{ url_for('logout') }}" aria-label="Logout" title="Logout">{{ ic('logout', 18) }}</a></div>
+  </aside>
+  <div class="content">
+    <header class="bar">
+      <a class="mb" href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='urxvps-logo.jpg') }}" alt=""><span>{{ site_name }}</span></a>
+      <div class="crumbs">{% block crumbs %}<a href="{{ url_for('dashboard') }}">Workspace</a><span class="sl">/</span><b>Projects</b>{% endblock %}</div>
+      <div class="pills" aria-label="Server load">
+        <span class="pill" data-gauge="cpu"><i></i>CPU <b class="mv">--</b></span>
+        <span class="pill" data-gauge="ram"><i></i>RAM <b class="mv">--</b></span>
+        <span class="pill" data-gauge="disk"><i></i>DISK <b class="mv">--</b></span>
+      </div>
+    </header>
+    <main class="main">
+      {% with msgs = get_flashed_messages(with_categories=true) %}{% if msgs %}
+      <div class="flashes">{% for cat, m in msgs %}<div class="flash {{ cat }}">{{ ic('check' if cat == 'ok' else 'alert', 18) }}<span>{{ m }}</span></div>{% endfor %}</div>
+      {% endif %}{% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+<nav class="tabbar" aria-label="Quick menu">
+  <a href="{{ url_for('dashboard') }}" class="{{ 'on' if nav == 'home' or server_name is defined }}">{{ ic('grid', 21) }}Projects</a>
+  <a href="{{ url_for('project_new') }}" class="{{ 'on' if nav == 'new' }}">{{ ic('plus', 21) }}New</a>
+  <a href="{{ url_for('logout') }}">{{ ic('logout', 21) }}Logout</a>
+</nav>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

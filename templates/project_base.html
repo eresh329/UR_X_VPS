@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% set nav = '' %}
+{% block title %}{{ server_name }} · {{ site_name }}{% endblock %}
+{% block crumbs %}<a href="{{ url_for('dashboard') }}">Projects</a><span class="sl">/</span><a href="{{ url_for('project_overview', name=server_name) }}">{{ server_name }}</a><span class="sl">/</span><b>{{ active|capitalize }}</b>{% endblock %}
+{% block content %}
+{% set run = config.status == 'running' %}
+<div class="ph rv">
+  <div class="pico {{ 'run' if run else 'off' }}">{{ ic('hex' if config.runtime == 'node' else ('window' if config.runtime == 'static' else 'code'), 26) }}</div>
+  <div class="grow">
+    <h1>{{ server_name }}</h1>
+    <div class="meta">
+      <span class="badge {{ 'run' if run else 'off' }}" id="stBadge"><i class="dot"></i><span id="stText">{{ config.status.upper() }}</span></span>
+      <span class="tag">{{ ic('code', 13) }}{{ config.runtime }}</span>
+      <span class="tag">{{ ic('link', 13) }}:{{ config.port }}</span>
+    </div>
+  </div>
+</div>
+<nav class="ptabs rv" style="--i:1" aria-label="Project">
+  <a href="{{ url_for('project_overview', name=server_name) }}" class="{{ 'on' if active == 'overview' }}">{{ ic('server', 16) }}Overview</a>
+  <a href="{{ url_for('project_console', name=server_name) }}" class="{{ 'on' if active == 'console' }}">{{ ic('terminal', 16) }}Console</a>
+  <a href="{{ url_for('project_files', name=server_name) }}" class="{{ 'on' if active == 'files' }}">{{ ic('folder', 16) }}Files</a>
+  <a href="{{ url_for('project_packages', name=server_name) }}" class="{{ 'on' if active == 'packages' }}">{{ ic('package', 16) }}Packages</a>
+  <a href="{{ url_for('project_settings', name=server_name) }}" class="{{ 'on' if active == 'settings' }}">{{ ic('sliders', 16) }}Settings</a>
+</nav>
+{% block pbody %}{% endblock %}
+{% endblock %}

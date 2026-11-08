@@ -1,0 +1,49 @@
+{% extends "project_base.html" %}
+{% block pbody %}
+<div class="term rv" style="--i:2">
+  <div class="termbar"><span class="t">{{ ic('terminal', 15) }}{{ server_name }} — live output</span>
+    <button class="btn sm" type="button" id="bRef">{{ ic('restart', 14) }}Refresh</button>
+    <button class="btn sm bad" type="button" id="bClr">{{ ic('broom', 14) }}Clear</button></div>
+  <div class="termbody" id="out"><span class="l sys">Connecting…</span></div>
+  <form class="cmdbar" id="cmdForm" autocomplete="off"><span class="pr">&gt;</span><input id="cmd" placeholder="Run a command in the project folder…" spellcheck="false" autocapitalize="none"><button class="btn pri sm" type="submit">{{ ic('next', 15) }}Run</button></form>
+</div>
+<p class="hint" style="margin-top:12px">Output refreshes every 3 seconds. Commands run inside the project folder.</p>
+{% endblock %}
+{% block scripts %}
+<script>
+(function(){
+  const base = '/server/{{ server_name }}', out = document.getElementById('out');
+  let last = null;
+  function cls(l){
+    if (l.startsWith('$ ')) return 'cmd';
+    if (l.startsWith('[PACKAGE]')) return 'pkg';
+    if (/error|traceback|exception|failed/i.test(l)) return 'err';
+    if (l.startsWith('===') || /^\[\d{4}-/.test(l)) return 'sys';
+    return '';
+  }
+  async function pull(){
+    try{
+      const d = await (await fetch(base + '/logs')).json();
+      const txt = d.logs || 'No logs found.';
+      if (txt === last) return; last = txt;
+      const near = out.scrollHeight - out.scrollTop - out.clientHeight < 80;
+      const frag = document.createDocumentFragment();
+      txt.split('\n').forEach(l => { const s = document.createElement('span'); s.className = 'l ' + cls(l); s.textContent = l || ' '; frag.appendChild(s); });
+      const c = document.createElement('span'); c.className = 'caret'; frag.appendChild(c);
+      out.replaceChildren(frag);
+      if (near || out.dataset.first !== '1') out.scrollTop = out.scrollHeight; out.dataset.first = '1';
+    }catch(e){}
+  }
+  async function post(path, body){
+    return fetch(base + path, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body||{})});
+  }
+  document.getElementById('bRef').onclick = pull;
+  document.getElementById('bClr').onclick = async () => { await post('/logs/clear'); last = null; pull(); };
+  document.getElementById('cmdForm').onsubmit = async e => {
+    e.preventDefault(); const i = document.getElementById('cmd'), v = i.value.trim(); if (!v) return;
+    i.value = ''; await post('/exec', {command: v}); setTimeout(pull, 500);
+  };
+  urxPoll(pull, 3000);
+})();
+</script>
+{% endblock %}

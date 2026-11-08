@@ -1,0 +1,74 @@
+{% extends "project_base.html" %}
+{% block pbody %}
+<div class="power rv" style="--i:2">
+  <form method="POST" action="{{ url_for('project_action', name=server_name, action='start') }}"><button class="btn ok block" {{ 'disabled' if run }}>{{ ic('play', 18) }}Start</button></form>
+  <form method="POST" action="{{ url_for('project_action', name=server_name, action='restart') }}"><button class="btn warn block">{{ ic('restart', 18) }}Restart</button></form>
+  <form method="POST" action="{{ url_for('project_action', name=server_name, action='stop') }}"><button class="btn bad block" {{ 'disabled' if not run }}>{{ ic('stop', 18) }}Stop</button></form>
+</div>
+
+<div class="panel kpis rv" style="--i:3">
+  <div class="cell"><div class="k">{{ ic('cpu', 15) }}CPU</div><div class="v" id="sCpu">{{ '0%' if run else '—' }}</div></div>
+  <div class="cell"><div class="k">{{ ic('ram', 15) }}Memory</div><div class="v" id="sMem">{{ '0 MB' if run else '—' }}</div></div>
+  <div class="cell"><div class="k">{{ ic('clock', 15) }}Uptime</div><div class="v" id="sUp">{{ '0s' if run else '—' }}</div></div>
+  <div class="cell"><div class="k">{{ ic('link', 15) }}Port</div><div class="v">{{ config.port }}</div></div>
+</div>
+
+<div class="panel rv" style="--i:4;margin-bottom:16px">
+  <h2 class="ph2">{{ ic('bolt', 17) }}Live CPU usage</h2>
+  <div class="spark">
+    <svg viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true">
+      <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62dfff" stop-opacity=".35"/><stop offset="1" stop-color="#62dfff" stop-opacity="0"/></linearGradient></defs>
+      <line class="base" x1="0" y1="59" x2="300" y2="59"/><path id="spA" class="ar" d=""/><path id="spL" class="ln" d=""/>
+    </svg>
+    {% if not run %}<div class="nodata">Start the project to see live usage</div>{% endif %}
+  </div>
+</div>
+
+<div class="g2">
+  <div class="panel rv" style="--i:5">
+    <h2>{{ ic('info', 17) }}Details</h2><div class="sub">Current configuration</div>
+    <div class="kv">
+      <div><span>Runtime</span><span>{{ config.runtime }}</span></div>
+      <div><span>Entry file</span><span>{{ config.main_file or 'auto-detect' }}</span></div>
+      <div><span>Custom command</span><span>{{ config.main_command or '—' }}</span></div>
+      <div><span>Process ID</span><span>{{ config.pid or '—' }}</span></div>
+      <div><span>Created</span><span>{{ (config.created or '')[:10] or '—' }}</span></div>
+    </div>
+  </div>
+  <div class="panel rv" style="--i:6">
+    <h2>{{ ic('folder', 17) }}Storage &amp; activity</h2><div class="sub">Files and output</div>
+    <div class="kv">
+      <div><span>Files</span><span>{{ file_count }}</span></div>
+      <div><span>Total size</span><span>{{ total_size }}</span></div>
+      <div><span>Log size</span><span>{{ log_size }}</span></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+      <a class="btn sm" href="{{ url_for('project_console', name=server_name) }}">{{ ic('terminal', 15) }}Open console</a>
+      <a class="btn sm" href="{{ url_for('project_files', name=server_name) }}">{{ ic('upload', 15) }}Upload files</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function(){
+  if ('{{ config.status }}' !== 'running') return;
+  const fmt = s => s < 60 ? s + 's' : s < 3600 ? Math.floor(s/60) + 'm ' + (s%60) + 's' : Math.floor(s/3600) + 'h ' + Math.floor(s%3600/60) + 'm';
+  const N = 40, pts = [], A = document.getElementById('spA'), L = document.getElementById('spL');
+  function draw(){
+    const max = Math.max(10, ...pts), step = 300 / (N - 1), off = N - pts.length;
+    const xy = pts.map((v, i) => ((off + i) * step).toFixed(1) + ' ' + (58 - v / max * 54).toFixed(1));
+    if (!xy.length) return;
+    L.setAttribute('d', 'M' + xy.join('L'));
+    A.setAttribute('d', 'M' + xy.join('L') + 'L300 60L' + ((off) * step).toFixed(1) + ' 60Z');
+  }
+  async function pull(){
+    const d = await (await fetch('{{ url_for("project_stats", name=server_name) }}')).json();
+    if (d.status !== 'running') { location.reload(); return; }
+    sCpu.textContent = d.cpu + '%'; sMem.textContent = d.mem_mb + ' MB'; sUp.textContent = fmt(d.uptime);
+    pts.push(+d.cpu || 0); if (pts.length > N) pts.shift(); draw();
+  }
+  urxPoll(pull, 3000);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "project_base.html" %}
+{% block pbody %}
+<div class="panel rv" style="--i:2">
+  <h2>{{ ic('upload', 17) }}Upload</h2><div class="sub">A .zip is extracted automatically. Single files go to the project root.</div>
+  <form method="POST" action="{{ url_for('upload_file', name=server_name) }}" enctype="multipart/form-data">
+    <label class="drop">
+      <svg class="up" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M32 42V14M20 26l12-12 12 12"/><path d="M10 40v10a4 4 0 0 0 4 4h36a4 4 0 0 0 4-4V40"/></svg>
+      <div><b>Choose files or drop them here</b><span>.zip · .py · .js · .json · .html · any file</span></div>
+      <input type="file" name="file" multiple>
+    </label>
+    <div class="picked" id="picked"></div>
+    <button class="btn pri" type="submit">{{ ic('upload', 16) }}Upload now</button>
+  </form>
+</div>
+
+<div class="sechead" style="margin:26px 0 12px"><h2>Project files · {{ files|selectattr('type','equalto','file')|list|length }}</h2></div>
+{% if files %}
+<div class="flist rv" style="--i:3">
+  {% for f in files %}
+  <div class="frow {{ f.type }}" style="padding-left:{{ 14 + f.depth * 18 }}px">
+    {{ ic('dir' if f.type == 'dir' else 'file', 18) }}
+    <span class="nm">{{ f.name }}{{ '/' if f.type == 'dir' }}</span>
+    <span class="sz">{{ f.size_h }}</span>
+    <a class="ib bad" href="{{ url_for('project_file_delete', name=server_name, path=f.path) }}" aria-label="Delete {{ f.name }}">{{ ic('trash', 15) }}</a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty"><h3>No files yet</h3><p>Upload a zip or a script to fill this project.</p></div>
+{% endif %}
+{% endblock %}

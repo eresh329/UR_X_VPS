@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% set nav = 'new' %}
+{% block title %}New project · {{ site_name }}{% endblock %}
+{% block content %}
+<div class="narrow">
+  <a class="crumb" href="{{ url_for('dashboard') }}">{{ ic('back', 15) }}All projects</a>
+  <div class="pagehead rv"><div><h1>New project</h1><p>Name it, pick a runtime. You will upload files on the next page.</p></div></div>
+  <form class="panel rv" style="--i:1" method="POST" action="{{ url_for('create_server') }}">
+    <div class="field"><label for="name">Project name</label>
+      <div class="inp">{{ ic('server', 18) }}<input id="name" name="name" placeholder="my-bot" required autofocus minlength="2" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9_.\-]{1,31}" autocapitalize="none" spellcheck="false"></div>
+      <div class="hint">2–32 characters · letters, numbers, dash, underscore, dot</div></div>
+    <div class="field"><label>Runtime</label>
+      <div class="runtimes">
+        <label class="rt"><input type="radio" name="runtime" value="python" checked><span class="box">{{ ic('code', 28) }}<b>Python</b><small>.py · pip</small></span></label>
+        <label class="rt"><input type="radio" name="runtime" value="node"><span class="box">{{ ic('hex', 28) }}<b>Node.js</b><small>.js · npm</small></span></label>
+        <label class="rt"><input type="radio" name="runtime" value="static"><span class="box">{{ ic('window', 28) }}<b>Static</b><small>html · css</small></span></label>
+      </div></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:26px">
+      <button class="btn pri lg" type="submit">Create project {{ ic('next', 18) }}</button>
+      <a class="btn lg" href="{{ url_for('dashboard') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

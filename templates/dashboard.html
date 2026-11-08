@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% set nav = 'home' %}
+{% block title %}Projects · {{ site_name }}{% endblock %}
+{% block crumbs %}<a href="{{ url_for('dashboard') }}">Workspace</a><span class="sl">/</span><b>Projects</b>{% endblock %}
+{% block content %}
+<div class="pagehead rv">
+  <div><h1>Projects</h1><p>Everything you host, in one place. Open a project to manage its console, files and packages.</p></div>
+  <a class="btn pri" href="{{ url_for('project_new') }}">{{ ic('plus', 16) }}New project</a>
+</div>
+
+<div class="split">
+  <div class="panel strip3 rv" style="--i:1">
+    <div class="cell"><div class="k">{{ ic('server', 15) }}Total</div><div class="v" data-count="{{ total }}">0</div></div>
+    <div class="cell okc"><div class="k">{{ ic('bolt', 15) }}Running</div><div class="v" data-count="{{ running }}">0</div></div>
+    <div class="cell badc"><div class="k">{{ ic('stop', 15) }}Stopped</div><div class="v" data-count="{{ total - running }}">0</div></div>
+  </div>
+  <div class="panel rv" style="--i:2">
+    <h2 class="ph2">{{ ic('cpu', 17) }}Server resources</h2><div class="sub">Live, refreshed every few seconds</div>
+    <div class="meter" data-gauge="cpu"><div class="mh"><span>{{ ic('cpu', 15) }}CPU</span><b class="mv">--</b></div><div class="track"><i class="fill"></i></div></div>
+    <div class="meter" data-gauge="ram"><div class="mh"><span>{{ ic('ram', 15) }}Memory</span><b class="mv">--</b></div><div class="track"><i class="fill"></i></div></div>
+    <div class="meter" data-gauge="disk"><div class="mh"><span>{{ ic('disk', 15) }}Disk</span><b class="mv">--</b></div><div class="track"><i class="fill"></i></div></div>
+  </div>
+</div>
+
+{% if servers %}
+<div class="toolbar rv" style="--i:3">
+  <label class="search">{{ ic('grid', 16) }}<input id="q" type="search" placeholder="Search projects…" autocomplete="off" spellcheck="false" aria-label="Search projects"></label>
+  <div class="seg" role="tablist">
+    <button class="on" data-f="all" type="button">All</button><button data-f="running" type="button">Running</button><button data-f="stopped" type="button">Stopped</button>
+  </div>
+</div>
+<div class="rows rv" style="--i:4">
+  {% for name, cfg in servers.items() %}
+  {% set run = cfg.status == 'running' %}
+  <article class="prow" data-st="{{ 'running' if run else 'stopped' }}" data-name="{{ name|lower }}">
+    <span class="sdot {{ 'run' if run }}"></span>
+    <div class="pn"><a href="{{ url_for('project_overview', name=name) }}">{{ name }}</a><small>{{ cfg.main_file or 'no entry file yet' }}</small></div>
+    <span class="tag">{{ ic('code', 13) }}{{ cfg.runtime }}</span>
+    <span class="badge {{ 'run' if run else 'off' }}"><i class="dot"></i>{{ cfg.status.upper() }}</span>
+    <div class="pa">
+      {% if run %}
+      <form method="POST" action="{{ url_for('project_action', name=name, action='stop') }}"><button class="ib bad" aria-label="Stop {{ name }}" title="Stop">{{ ic('stop', 16) }}</button></form>
+      {% else %}
+      <form method="POST" action="{{ url_for('project_action', name=name, action='start') }}"><button class="ib ok" aria-label="Start {{ name }}" title="Start">{{ ic('play', 16) }}</button></form>
+      {% endif %}
+      <a class="ib" href="{{ url_for('project_console', name=name) }}" aria-label="Console" title="Console">{{ ic('terminal', 16) }}</a>
+      <a class="ib" href="{{ url_for('project_files', name=name) }}" aria-label="Files" title="Files">{{ ic('folder', 16) }}</a>
+      <a class="ib" href="{{ url_for('project_overview', name=name) }}" aria-label="Open" title="Open">{{ ic('next', 16) }}</a>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+<div class="empty" id="noMatch" hidden style="margin-top:12px"><h3>No match</h3><p>Nothing fits that filter.</p></div>
+{% else %}
+<div class="empty rv" style="--i:3">
+  <svg class="float" viewBox="0 0 130 110" fill="none" stroke="#62dfff" stroke-width="1.6"><rect x="20" y="14" width="90" height="30" rx="7" stroke-opacity=".7"/><rect x="20" y="52" width="90" height="30" rx="7" stroke-opacity=".45" stroke-dasharray="4 5"/><circle cx="36" cy="29" r="3" fill="#7af0c8" stroke="none"/><path d="M52 29h36" stroke-linecap="round"/></svg>
+  <h3>No projects yet</h3><p>Create your first project, upload a zip and hit start.</p>
+  <a class="btn pri" href="{{ url_for('project_new') }}">{{ ic('plus', 17) }}Create project</a>
+</div>
+{% endif %}
+{% endblock %}

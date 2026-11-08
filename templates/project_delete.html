@@ -1,0 +1,12 @@
+{% extends "project_base.html" %}
+{% block pbody %}
+<div class="panel danger center narrow rv" style="--i:2;padding:44px 26px">
+  <div class="bigico">{{ ic('trash', 38) }}</div>
+  <h2 style="justify-content:center;font-size:22px">Delete {{ server_name }}?</h2>
+  <p class="muted" style="margin-top:8px">The process will be stopped and every file and log removed. This cannot be undone.</p>
+  <form method="POST" action="{{ url_for('delete_server', name=server_name) }}" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px">
+    <button class="btn bad lg" type="submit">{{ ic('trash', 17) }}Yes, delete project</button>
+    <a class="btn lg" href="{{ url_for('project_settings', name=server_name) }}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

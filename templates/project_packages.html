@@ -1,0 +1,64 @@
+{% extends "project_base.html" %}
+{% block pbody %}
+<div class="g2" style="align-items:start">
+<div class="panel rv" style="--i:2">
+  <h2>{{ ic('package', 17) }}Install a package</h2><div class="sub">{{ 'npm' if config.runtime == 'node' else 'pip' }} — type a name or tap one from the list. Progress is written to the console.</div>
+  <form id="pkgForm" style="display:flex;gap:10px" autocomplete="off">
+    <div class="inp" style="flex:1">{{ ic('package', 18) }}<input id="pkg" placeholder="{{ '@scope/name or name' if config.runtime == 'node' else 'requests' }}" spellcheck="false" autocapitalize="none"></div>
+    <button class="btn pri" type="submit" style="height:46px">Install</button>
+  </form>
+  <div class="msg" id="msg"></div>
+  <div class="chips" id="chips" style="margin-top:6px"></div>
+</div>
+<div class="panel rv" style="--i:3">
+  <h2>{{ ic('check', 18) }}Declared packages</h2><div class="sub">From {{ 'package.json' if config.runtime == 'node' else 'requirements.txt' }}</div>
+  <div class="flist free" id="installed"><div class="muted" style="font-size:13px">Loading…</div></div>
+  <a class="btn sm" style="margin-top:18px" href="{{ url_for('project_console', name=server_name) }}">{{ ic('terminal', 15) }}View install log</a>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function(){
+  const base = '/server/{{ server_name }}', RT = '{{ config.runtime }}';
+  const PY = ['requests','aiohttp','httpx','flask','fastapi','uvicorn','gunicorn','python-telegram-bot','pyTelegramBotAPI','aiogram','telethon','pyrogram','tgcrypto','discord.py','py-cord','nextcord','python-dotenv','pandas','numpy','scipy','matplotlib','Pillow','opencv-python-headless','beautifulsoup4','lxml','selenium','playwright','scrapy','pymongo','motor','redis','sqlalchemy','psycopg2-binary','aiosqlite','cryptography','pycryptodome','PyJWT','bcrypt','loguru','colorama','rich','tqdm','pydantic','pyyaml','psutil','schedule','APScheduler','websockets','python-socketio','yt-dlp','gTTS','openai','anthropic','google-generativeai','groq','qrcode','pyfiglet','pytz','python-dateutil','aiofiles','uvloop','orjson','cloudscraper'];
+  const ND = ['express','discord.js','telegraf','node-telegram-bot-api','grammy','whatsapp-web.js','@whiskeysockets/baileys','axios','node-fetch','got','cheerio','puppeteer','playwright','socket.io','ws','cors','cookie-parser','express-session','dotenv','mongoose','mongodb','redis','ioredis','mysql2','pg','sequelize','sqlite3','better-sqlite3','jsonwebtoken','bcryptjs','moment','dayjs','lodash','chalk','nodemon','multer','sharp','jimp','canvas','fluent-ffmpeg','ytdl-core','openai','@anthropic-ai/sdk','node-cron','uuid','qrcode','pino','winston','typescript','ts-node','helmet','morgan'];
+  const msg = document.getElementById('msg'), input = document.getElementById('pkg'), chips = document.getElementById('chips');
+  async function install(name, chip){
+    name = (name || input.value).trim();
+    if (!name){ msg.className = 'msg bad'; msg.textContent = 'Enter a package name.'; return; }
+    if (chip) chip.classList.add('busy');
+    msg.className = 'msg'; msg.textContent = 'Installing ' + name + ' …';
+    try{
+      const r = await fetch(base + '/packages/install', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name})});
+      const d = await r.json();
+      msg.className = 'msg' + (d.success ? '' : ' bad');
+      msg.textContent = d.success ? '✓ ' + d.message : '✕ ' + (d.error || 'Failed');
+      if (d.success){ if (chip) chip.classList.add('done'); if (!chip) input.value = ''; setTimeout(loadInstalled, 6000); }
+    }catch(e){ msg.className = 'msg bad'; msg.textContent = '✕ Network error'; }
+    if (chip) chip.classList.remove('busy');
+  }
+  document.getElementById('pkgForm').onsubmit = e => { e.preventDefault(); install(); };
+  (RT === 'node' ? ND : PY).forEach(p => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = p; b.onclick = () => install(p, b); chips.appendChild(b); });
+
+  const box = document.getElementById('installed');
+  async function loadInstalled(){
+    try{
+      const d = await (await fetch(base + '/packages')).json();
+      box.textContent = '';
+      if (!d.packages || !d.packages.length){ box.innerHTML = '<div class="muted" style="font-size:13px">Nothing declared yet.</div>'; return; }
+      d.packages.forEach((p, i) => {
+        const row = document.createElement('div'); row.className = 'frow'; row.style.setProperty('--i', Math.min(i, 20));
+        row.innerHTML = '<svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5"/><path d="M12 12v9"/></svg><span class="nm"></span><span class="sz"></span>';
+        row.querySelector('.nm').textContent = p.name; row.querySelector('.sz').textContent = p.version;
+        const x = document.createElement('button'); x.className = 'btn bad sm'; x.type = 'button'; x.textContent = 'Remove';
+        x.onclick = async () => { x.disabled = true; x.textContent = '…';
+          await fetch(base + '/packages/remove', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name: p.name})}); loadInstalled(); };
+        row.appendChild(x); box.appendChild(row);
+      });
+    }catch(e){ box.textContent = 'Could not load packages.'; }
+  }
+  loadInstalled();
+})();
+</script>
+{% endblock %}

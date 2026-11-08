@@ -1,0 +1,16 @@
+{% extends "project_base.html" %}
+{% block pbody %}
+<div class="g2" style="align-items:start">
+<form class="panel rv" style="--i:2" method="POST" action="{{ url_for('project_action', name=server_name, action='settings') }}">
+  <h2>{{ ic('sliders', 18) }}Run configuration</h2><div class="sub">How this project is started.</div>
+  <div class="field"><label for="mf">Main file</label><div class="inp">{{ ic('file', 18) }}<input id="mf" name="main_file" value="{{ config.main_file or '' }}" placeholder="main.py / index.js" spellcheck="false" autocapitalize="none"></div></div>
+  <div class="field"><label for="mc">Custom command <span style="opacity:.6">(optional)</span></label><div class="inp">{{ ic('terminal', 18) }}<input id="mc" name="main_command" value="{{ config.main_command or '' }}" placeholder="python3 main.py" spellcheck="false" autocapitalize="none"></div><div class="hint">When set, this replaces the automatic start command.</div></div>
+  <div class="field"><label for="pt">Port</label><div class="inp">{{ ic('link', 18) }}<input id="pt" name="port" type="number" min="1" max="65535" value="{{ config.port or 8080 }}"></div><div class="hint">Passed to your app as the PORT variable.</div></div>
+  <button class="btn pri" type="submit">{{ ic('check', 17) }}Save settings</button>
+</form>
+<div class="panel danger rv" style="--i:3">
+  <h2 style="color:var(--bad)">{{ ic('alert', 18) }}Danger zone</h2><div class="sub">Deleting removes the project, its files and logs for good.</div>
+  <a class="btn bad" href="{{ url_for('project_delete', name=server_name) }}">{{ ic('trash', 17) }}Delete this project</a>
+</div>
+</div>
+{% endblock %}

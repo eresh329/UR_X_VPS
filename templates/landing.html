@@ -1,0 +1,51 @@
+{% extends "base_pub.html" %}
+{% block title %}{{ site_name }} · Private hosting{% endblock %}
+{% block pnav %}<a class="lnk" href="#runtimes">Runtimes</a><a class="lnk" href="#features">Features</a><a class="btn pri sm" href="{{ url_for('login') }}">{{ ic('login', 15) }}Sign in</a>{% endblock %}
+{% block content %}
+<section class="hero2">
+  <span class="livepill rv" style="--i:0"><i></i>PANEL ONLINE · {{ total_servers }} PROJECTS · {{ total_users }} USERS</span>
+  <h1 class="rv" style="--i:1">Host your bots &amp; apps.<br><span class="grad">Control it all from one panel.</span></h1>
+  <p class="rv" style="--i:2">Create a project, upload a zip, press start. Live console, file manager and package installer — fast on any phone.</p>
+  <div class="cta rv" style="--i:3"><a class="btn pri lg" href="{{ url_for('login') }}">Open panel {{ ic('next', 18) }}</a><a class="btn lg" href="#features">See features</a></div>
+</section>
+
+<div class="rv" style="--i:4"><div class="mock" aria-hidden="true">
+  <div class="mkbar"><i></i><i></i><i></i><span>panel / projects</span></div>
+  <div class="mkbody">
+    <div class="mkside"><u></u><u></u><u></u><u></u><u></u></div>
+    <div class="mkmain">
+      <div class="mkm">
+        <div>CPU<div class="track"><span class="fill" style="--v:.62"></span></div></div>
+        <div>MEMORY<div class="track"><span class="fill" style="--v:.45"></span></div></div>
+        <div>DISK<div class="track"><span class="fill" style="--v:.78"></span></div></div>
+      </div>
+      <div class="mkr"><span class="sdot run"></span>telegram-bot<em>python</em><small>RUNNING</small></div>
+      <div class="mkr"><span class="sdot run"></span>discord-music<em>node</em><small>RUNNING</small></div>
+      <div class="mkr"><span class="sdot"></span>my-site<em>static</em><small>STOPPED</small></div>
+    </div>
+  </div>
+</div></div>
+
+<section id="runtimes">
+  <div class="sect2"><span class="livepill">RUNTIMES</span><h2>Run what you already have</h2><p>Pick a runtime when you create a project — dependencies are picked up from your files.</p></div>
+  <div class="rtc">
+    <div class="panel rv" style="--i:1"><div class="ico">{{ ic('code', 22) }}</div><h3>Python</h3><p>Bots, APIs and scripts with pip and requirements.txt support.</p><small>.py · pip</small></div>
+    <div class="panel rv" style="--i:2"><div class="ico">{{ ic('hex', 22) }}</div><h3>Node.js</h3><p>Express servers, Discord and WhatsApp bots with npm.</p><small>.js · npm</small></div>
+    <div class="panel rv" style="--i:3"><div class="ico">{{ ic('window', 22) }}</div><h3>Static</h3><p>Plain HTML, CSS and JavaScript sites, served as they are.</p><small>html · css · js</small></div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="sect2"><span class="livepill">FEATURES</span><h2>Everything in the panel</h2></div>
+  <div class="ftab">
+    <div>{{ ic('server', 24) }}<h3>One-tap control</h3><p>Start, stop and restart any project instantly.</p></div>
+    <div>{{ ic('terminal', 24) }}<h3>Live console</h3><p>Streaming logs plus a command line.</p></div>
+    <div>{{ ic('folder', 24) }}<h3>File manager</h3><p>Drop a zip — it is extracted for you.</p></div>
+    <div>{{ ic('package', 24) }}<h3>Package manager</h3><p>Install or remove pip and npm modules.</p></div>
+    <div>{{ ic('bolt', 24) }}<h3>Always on</h3><p>Keep-alive and auto-restart for crashed projects.</p></div>
+    <div>{{ ic('shield', 24) }}<h3>Private</h3><p>Every project is tied to your username.</p></div>
+  </div>
+</section>
+
+<section class="band"><h2>Ready when you are</h2><p>Sign in and your first project is a minute away.</p><a class="btn pri lg" href="{{ url_for('login') }}">Get started {{ ic('next', 18) }}</a></section>
+{% endblock %}
