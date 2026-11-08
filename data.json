@@ -1,0 +1,48 @@
+{
+  "servers": {
+    "Test": {
+      "name": "Test",
+      "owner": "admin",
+      "runtime": "python",
+      "status": "stopped",
+      "main_file": "",
+      "main_command": "",
+      "port": 8080,
+      "pid": null,
+      "created": "2026-11-06T21:54:55.798938"
+    },
+    "Zx-jihad": {
+      "name": "Zx-jihad",
+      "owner": "jihad224",
+      "runtime": "python",
+      "status": "stopped",
+      "main_file": "",
+      "main_command": "",
+      "port": 8080,
+      "pid": null,
+      "created": "2026-11-07T14:33:06.197771"
+    }
+  },
+  "users": {
+    "admin": {
+      "joined": "2026-11-06T20:13:19.281979",
+      "password_hash": "44838beb321594a92f1029c2b711e681aeed749c1253fc302c4dd681b5e30b77"
+    },
+    "jihad224": {
+      "joined": "2026-11-07T14:32:59.699059",
+      "password_hash": "5b04a0ceaae39f1b7bf19a5f88f724592b3b65d576fb2f28a907d548039b7871"
+    },
+    "eresh": {
+      "joined": "2026-11-08T11:02:13.549919",
+      "password_hash": "5b04a0ceaae39f1b7bf19a5f88f724592b3b65d576fb2f28a907d548039b7871"
+    }
+  },
+  "settings": {
+    "maintenance": false,
+    "maintenance_msg": "System under maintenance.",
+    "theme_color": "#62dfff",
+    "normal_password": "ERESH7",
+    "site_name": "UR X VPS",
+    "auto_restart_interval": 300
+  }
+}
