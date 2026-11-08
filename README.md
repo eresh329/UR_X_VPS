@@ -11,7 +11,7 @@ Pages: `/` landing · `/login` · `/dashboard` · `/project/new` · `/project/<n
 3. Start with the Procfile command.
 
 ## Security
-Default shared access password is `ERESH7` — change `settings.normal_password` in `data.json`
+Default shared access password is `🖕🏻`🖕🏻 — change `settings.normal_password` in `data.json`
 (or set `NORMAL_PASSWORD`) and set a strong `SECRET_KEY` before going public.
 
 ## Customising
